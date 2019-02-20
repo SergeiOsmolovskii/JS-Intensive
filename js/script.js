@@ -1,5 +1,34 @@
 window.addEventListener('DOMContentLoaded', function () {
+    
+const loadContent = async (url, callback) => {
+    await fetch(url)
+        .then(response => response.json())
+        .then(json => createElement(json.goods));
+    callback();
+}
 
+function createElement(arr) {
+    const goodsWraper = document.querySelector('.goods__wrapper');
+
+    arr.forEach(function (item) {
+        let card = document.createElement('div');
+        card.classList.add('goods__item');
+        card.innerHTML = `
+        <img class="goods__img" src="${item.url}" alt="phone">
+        <div class="goods__colors">Доступно цветов: 4</div>
+        <div class="goods__title">
+            ${item.title}
+        </div>
+        <div class="goods__price">
+            <span>${item.price}</span> руб/шт
+        </div>
+        <button class="goods__btn">Добавить в корзину</button>
+        `;
+        goodsWraper.appendChild(card);
+    });
+}
+
+loadContent('js/db.json', ()=>{
     const cartWrapper = document.querySelector('.cart__wrapper');
     const cart = document.querySelector('.cart');
     const close = document.querySelector('.cart__close');
@@ -39,15 +68,15 @@ window.addEventListener('DOMContentLoaded', function () {
             removeBtn.textContent = 'X';
             item.appendChild(removeBtn);
             cartWrapper.appendChild(item);
-            
+
             if (empty) {
                 empty.style.display = 'none';
             }
 
             calcTotalPrice();
             removeFromCart();
-        });
-    });
+        })
+    })
 
     function cartEmpty() {
         let empty = cartWrapper.querySelector('.empty');
@@ -62,7 +91,7 @@ window.addEventListener('DOMContentLoaded', function () {
             if (item.textContent.length < 70) {
                 return;
             } else {
-                const str = item.textContent.slice(0, 71) + '...';
+                const str = item.textContent.slice(0, 60) + '...';
                 item.textContent = str;
             }
         });
@@ -95,7 +124,6 @@ window.addEventListener('DOMContentLoaded', function () {
         let total = 0;
         prices.forEach(function (item) {
             total += parseInt(item.textContent);
-
         });
         totalCost.textContent = total;
     }
@@ -110,7 +138,7 @@ window.addEventListener('DOMContentLoaded', function () {
                 cartEmpty();
             })
         })
-
     }
     sliceTitle();
+});
 });
